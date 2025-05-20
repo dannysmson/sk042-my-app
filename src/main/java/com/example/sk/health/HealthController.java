@@ -17,8 +17,8 @@ public class HealthController {
 
     public HealthController(
         @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
-        @Qualifier("liveness") HealthIndicator livenessIndicator,
-        @Qualifier("readiness") HealthIndicator readinessIndicator
+        @Qualifier("customLiveness") HealthIndicator livenessIndicator,
+        @Qualifier("customReadiness") HealthIndicator readinessIndicator
     ) {
         this.livenessIndicator = livenessIndicator;
         this.readinessIndicator = readinessIndicator;
