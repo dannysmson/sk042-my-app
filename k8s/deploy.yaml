@@ -4,7 +4,7 @@ metadata:
   name: sk042-my-app
   namespace: skala-practice
 spec:
-  replicas: 1
+  replicas: 2
   selector:
     matchLabels:
       app: sk042-my-app
@@ -19,6 +19,16 @@ spec:
         app: sk042-my-app
     spec:
       serviceAccountName: default
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution: # "반드시" 이 규칙을 따를 것
+            - labelSelector:
+                matchExpressions:
+                  - key: app
+                    operator: In
+                    values:
+                      - sk042-my-app
+              topologyKey: "kubernetes.io/hostname"
       containers:
         - name: my-app
           image: amdp-registry.skala-ai.com/skala25a/sk042-my-app:2.0.0-3-d124ecc10d9d
@@ -30,3 +40,17 @@ spec:
               value: skala-practice
             - name: SPRING_PROFILES_ACTIVE
               value: prod
+          livenessProbe:
+            httpGet:
+              path: /actuator/health/liveness
+              port: 8080
+            initialDelaySeconds: 10
+            periodSeconds: 15
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /actuator/health/readiness
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            failureThreshold: 3
